@@ -29,8 +29,8 @@ pairs:
 
 ```text
 section
-    key1=value1
-    key2=value2
+ key1=value1
+ key2=value2
 ```
 
 That structure is mapped to `map[string]map[string]string` in Go - we'll call it `SectMap` going
