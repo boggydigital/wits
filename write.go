@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func Write(data map[string][]string, path string) error {
+func (sl SectLines) Write(path string) error {
 	dir, _ := filepath.Split(path)
 	if dir != "" {
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
@@ -23,7 +23,7 @@ func Write(data map[string][]string, path string) error {
 		return err
 	}
 
-	for section, lines := range data {
+	for section, lines := range sl {
 		if _, err := fmt.Fprintf(file, "%s\n", section); err != nil {
 			return err
 		}
@@ -35,4 +35,8 @@ func Write(data map[string][]string, path string) error {
 	}
 
 	return nil
+}
+
+func (sm SectMap) Write(path string) error {
+	return SectMapToLines(sm).Write(path)
 }

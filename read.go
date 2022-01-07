@@ -12,8 +12,11 @@ const (
 	commentPrefix = "#"
 )
 
-func Read(path string) (map[string][]string, error) {
-	data := make(map[string][]string)
+type SectLines map[string][]string
+type SectMap map[string]map[string]string
+
+func ReadSectLines(path string) (SectLines, error) {
+	data := make(SectLines)
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return data, nil
@@ -49,4 +52,12 @@ func Read(path string) (map[string][]string, error) {
 	}
 
 	return data, nil
+}
+
+func ReadSectMap(path string) (SectMap, error) {
+	if lines, err := ReadSectLines(path); err != nil {
+		return nil, err
+	} else {
+		return SectLinesToMap(lines), nil
+	}
 }
