@@ -13,6 +13,14 @@ section2
  line2-2 
 ```
 
+## Why wits?
+
+Why you'd use wits vs other options? In most cases there are existing and better general purpose text formats: JSON, YAML, TOML, etc. Yet, sometimes you don't need most of the functionality they offer and might appreciate lighter solution for simpler cases. 
+
+In those cases, you might appreciate wits - it works great when you need simple structural data (that's fixed and not generic, by design) and you want to allow effortless human data entry into those files, that's harder to mess up.
+
+## Lines types
+
 In essence, wits files contain lines and line prefix defines line role:
 
 - `#` character prefix makes line a comment
@@ -40,12 +48,12 @@ forward.
 
 Adding wits module to your Go app: `go get github.com/boggydigital/wits`
 
-wits provides the following methods to read data:
+wits provides the following methods to read local data:
 
 - `ReadSectLines(path string) (SectLines, error)`
 - `ReadSectMap(path string) (SectMap, error)`
 
-wits provides the following methods to write data:
+wits provides the following methods to write data to disk:
 
 - `(sl SectLines) Write(path string) error`
 - `(sm SectMap) Write(path string) error`
