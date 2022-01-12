@@ -44,7 +44,11 @@ func ReadSectLines(path string) (SectLines, error) {
 			if sect == "" {
 				return data, fmt.Errorf("cannot start with a space prefixed line")
 			}
-			data[sect] = append(data[sect], strings.TrimSpace(line))
+			tline := strings.TrimSpace(line)
+			if strings.HasPrefix(tline, commentPrefix) {
+				continue
+			}
+			data[sect] = append(data[sect], tline)
 		} else {
 			sect = line
 			data[sect] = make([]string, 0)
