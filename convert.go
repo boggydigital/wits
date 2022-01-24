@@ -47,7 +47,7 @@ func kvsToKv(kvs KeyValues) KeyValue {
 		switch len(values) {
 		case 0:
 			kv[key] = ""
-		case 1:
+		default:
 			kv[key] = values[0]
 		}
 	}
