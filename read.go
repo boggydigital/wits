@@ -3,31 +3,29 @@ package wits
 import (
 	"bufio"
 	"fmt"
-	"os"
+	"io"
 	"strings"
 )
 
 const (
-	spacePrefix   = " "
-	commentPrefix = "#"
+	spacePfx   = " "
+	tabPfx     = "\t"
+	commentPfx = "#"
 )
 
-type SectLines map[string][]string
-type SectMap map[string]map[string]string
-
-func ReadSectLines(path string) (SectLines, error) {
-	data := make(SectLines)
-
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return data, nil
+func ReadKeyValue(r io.ReadCloser) (KeyValue, error) {
+	if kvs, err := ReadKeyValues(r); err != nil {
+		return nil, err
+	} else {
+		return kvsToKv(kvs), nil
 	}
+}
 
-	listFile, err := os.Open(path)
-	if err != nil {
-		return data, err
-	}
+func ReadKeyValues(r io.ReadCloser) (KeyValues, error) {
+	defer r.Close()
+	data := make(KeyValues)
 
-	scanner := bufio.NewScanner(listFile)
+	scanner := bufio.NewScanner(r)
 	scanner.Split(bufio.ScanLines)
 
 	sect := ""
@@ -36,16 +34,16 @@ func ReadSectLines(path string) (SectLines, error) {
 		line := scanner.Text()
 
 		if line == "" ||
-			strings.HasPrefix(line, commentPrefix) {
+			strings.HasPrefix(line, commentPfx) {
 			continue
 		}
 
-		if strings.HasPrefix(line, spacePrefix) {
+		if strings.HasPrefix(line, spacePfx) || strings.HasPrefix(line, tabPfx) {
 			if sect == "" {
-				return data, fmt.Errorf("cannot start with a space prefixed line")
+				return data, fmt.Errorf("cannot start with a whitespace prefixed line")
 			}
-			tline := strings.TrimSpace(line)
-			if strings.HasPrefix(tline, commentPrefix) {
+			tline := strings.Trim(line, tabPfx+spacePfx)
+			if strings.HasPrefix(tline, commentPfx) {
 				continue
 			}
 			data[sect] = append(data[sect], tline)
@@ -58,10 +56,18 @@ func ReadSectLines(path string) (SectLines, error) {
 	return data, nil
 }
 
-func ReadSectMap(path string) (SectMap, error) {
-	if lines, err := ReadSectLines(path); err != nil {
+func ReadSectionKeyValue(r io.ReadCloser) (SectionKeyValue, error) {
+	if lines, err := ReadKeyValues(r); err != nil {
 		return nil, err
 	} else {
-		return SectLinesToMap(lines), nil
+		return kvsToSkv(lines), nil
+	}
+}
+
+func ReadSectionKeyValues(r io.ReadCloser) (SectionKeyValues, error) {
+	if kvs, err := ReadKeyValues(r); err != nil {
+		return nil, err
+	} else {
+		return kvsToSkvs(kvs), nil
 	}
 }

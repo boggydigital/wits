@@ -5,7 +5,10 @@ import (
 	"strings"
 )
 
-const kvSep = "="
+const (
+	keyValueSep = "="
+	valuesSep   = ";"
+)
 
 // FIXME: replace calls to this with strings.Cut when 1.18 releases
 func cut(s, sep string) (before, after string, found bool) {
@@ -15,30 +18,97 @@ func cut(s, sep string) (before, after string, found bool) {
 	return s, "", false
 }
 
-func SectLinesToMap(data SectLines) SectMap {
-	res := make(SectMap, len(data))
+// The following conversions are available
+// (left column = from, top row = to):
+// |      | kv | kvs | skv | skvs |
+// |   kv | == | YES | NAH | NOPE |
+// |  kvs | OK | ==  | YES | YEAH |
+// |  skv | NO | YES | === | NOPE |
+// | skvs | NO | YES | NAH | ==== |
+//
+// Simple way to read this table:
+// - KeyValues can be converted into everything else, it's the only type that's read natively
+// - everything can be converted into KeyValues,  it's the only type that's writable natively
 
-	for sect, lines := range data {
-		res[sect] = make(map[string]string, len(lines))
-		for _, line := range lines {
-			key, val, _ := cut(line, kvSep)
-			res[sect][key] = val
-		}
+func kvToKvs(kv KeyValue) KeyValues {
+	kvs := make(KeyValues, len(kv))
+
+	for key, value := range kv {
+		kvs[key] = []string{value}
 	}
 
-	return res
+	return kvs
 }
 
-func SectMapToLines(data SectMap) SectLines {
-	res := make(SectLines, len(data))
+func kvsToKv(kvs KeyValues) KeyValue {
+	kv := make(KeyValue, len(kvs))
 
-	for sect, mp := range data {
-		res[sect] = make([]string, 0, len(mp))
-		for key, val := range mp {
-			res[sect] = append(res[sect],
-				fmt.Sprintf("%s%s%s", key, kvSep, val))
+	for key, values := range kvs {
+		switch len(values) {
+		case 0:
+			kv[key] = ""
+		case 1:
+			kv[key] = values[0]
 		}
 	}
 
-	return res
+	return kv
+}
+
+func kvsToSkv(kvs KeyValues) SectionKeyValue {
+	skv := make(SectionKeyValue, len(kvs))
+
+	for section, keyValues := range kvs {
+		skv[section] = make(KeyValue, len(keyValues))
+		for _, keyValue := range keyValues {
+			key, val, _ := cut(keyValue, keyValueSep)
+			skv[section][key] = val
+		}
+	}
+
+	return skv
+}
+
+func kvsToSkvs(kvs KeyValues) SectionKeyValues {
+	skvs := make(SectionKeyValues, len(kvs))
+
+	for section, keyValuePairs := range kvs {
+		skvs[section] = make(KeyValues, len(keyValuePairs))
+		for _, keyValues := range keyValuePairs {
+			key, values, _ := cut(keyValues, keyValueSep)
+			skvs[section][key] = strings.Split(values, valuesSep)
+		}
+	}
+
+	return skvs
+}
+
+func skvToKvs(skv SectionKeyValue) KeyValues {
+	kvs := make(KeyValues, len(skv))
+
+	for section, kv := range skv {
+		kvs[section] = make([]string, 0, len(kv))
+		for key, val := range kv {
+			kvs[section] = append(kvs[section],
+				fmt.Sprintf("%s%s%s", key, keyValueSep, val))
+		}
+	}
+
+	return kvs
+}
+
+func skvsToKvs(skvs SectionKeyValues) KeyValues {
+	kvs := make(KeyValues, len(skvs))
+
+	for section, keyValues := range skvs {
+		for key, values := range keyValues {
+			kvs[section] = append(kvs[section],
+				fmt.Sprintf("%s%s%s",
+					key,
+					keyValueSep,
+					strings.Join(values, valuesSep)))
+		}
+	}
+
+	return kvs
 }

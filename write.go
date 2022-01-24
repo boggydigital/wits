@@ -2,33 +2,18 @@ package wits
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
+	"io"
 )
 
-func (sl SectLines) Write(path string) error {
-	dir, _ := filepath.Split(path)
-	if dir != "" {
-		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			if err := os.MkdirAll(dir, 0755); err != nil {
-				return err
-			}
-		}
-	}
+func (kvs KeyValues) Write(w io.WriteCloser) error {
+	defer w.Close()
 
-	file, err := os.Create(path)
-	defer file.Close()
-
-	if err != nil {
-		return err
-	}
-
-	for section, lines := range sl {
-		if _, err := fmt.Fprintf(file, "%s\n", section); err != nil {
+	for key, values := range kvs {
+		if _, err := fmt.Fprintf(w, "%s\n", key); err != nil {
 			return err
 		}
-		for _, line := range lines {
-			if _, err := fmt.Fprintf(file, "%s%s\n", spacePrefix, line); err != nil {
+		for _, value := range values {
+			if _, err := fmt.Fprintf(w, "%s%s\n", spacePfx, value); err != nil {
 				return err
 			}
 		}
@@ -37,6 +22,14 @@ func (sl SectLines) Write(path string) error {
 	return nil
 }
 
-func (sm SectMap) Write(path string) error {
-	return SectMapToLines(sm).Write(path)
+func (kv KeyValue) Write(w io.WriteCloser) error {
+	return kvToKvs(kv).Write(w)
+}
+
+func (skv SectionKeyValue) Write(w io.WriteCloser) error {
+	return skvToKvs(skv).Write(w)
+}
+
+func (skvs SectionKeyValues) Write(w io.WriteCloser) error {
+	return skvsToKvs(skvs).Write(w)
 }
