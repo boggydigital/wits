@@ -18,11 +18,12 @@ func cut(s, sep string) (before, after string, found bool) {
 	return s, "", false
 }
 
-// The following conversions are available
-// (left column = from, top row = to):
+// The following conversions are available (left column = from, top row = to):
+//
 // |      | kv | kvs | skv | skvs |
+// | ---- | -- | --- | --- | ---- |
 // |   kv | == | YES | NAH | NOPE |
-// |  kvs | OK | ==  | YES | YEAH |
+// |  kvs | OK | === | YES | YEAH |
 // |  skv | NO | YES | === | NOPE |
 // | skvs | NO | YES | NAH | ==== |
 //
@@ -31,6 +32,10 @@ func cut(s, sep string) (before, after string, found bool) {
 // - everything can be converted into KeyValues,  it's the only type that's writable natively
 
 func kvToKvs(kv KeyValue) KeyValues {
+	if kv == nil {
+		return nil
+	}
+
 	kvs := make(KeyValues, len(kv))
 
 	for key, value := range kv {
@@ -41,6 +46,10 @@ func kvToKvs(kv KeyValue) KeyValues {
 }
 
 func kvsToKv(kvs KeyValues) KeyValue {
+	if kvs == nil {
+		return nil
+	}
+
 	kv := make(KeyValue, len(kvs))
 
 	for key, values := range kvs {
@@ -56,6 +65,10 @@ func kvsToKv(kvs KeyValues) KeyValue {
 }
 
 func kvsToSkv(kvs KeyValues) SectionKeyValue {
+	if kvs == nil {
+		return nil
+	}
+
 	skv := make(SectionKeyValue, len(kvs))
 
 	for section, keyValues := range kvs {
@@ -70,6 +83,10 @@ func kvsToSkv(kvs KeyValues) SectionKeyValue {
 }
 
 func kvsToSkvs(kvs KeyValues) SectionKeyValues {
+	if kvs == nil {
+		return nil
+	}
+
 	skvs := make(SectionKeyValues, len(kvs))
 
 	for section, keyValuePairs := range kvs {
@@ -84,6 +101,10 @@ func kvsToSkvs(kvs KeyValues) SectionKeyValues {
 }
 
 func skvToKvs(skv SectionKeyValue) KeyValues {
+	if skv == nil {
+		return nil
+	}
+
 	kvs := make(KeyValues, len(skv))
 
 	for section, kv := range skv {
@@ -98,9 +119,14 @@ func skvToKvs(skv SectionKeyValue) KeyValues {
 }
 
 func skvsToKvs(skvs SectionKeyValues) KeyValues {
+	if skvs == nil {
+		return nil
+	}
+
 	kvs := make(KeyValues, len(skvs))
 
 	for section, keyValues := range skvs {
+		kvs[section] = make([]string, 0)
 		for key, values := range keyValues {
 			kvs[section] = append(kvs[section],
 				fmt.Sprintf("%s%s%s",

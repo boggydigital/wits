@@ -49,6 +49,9 @@ func ReadKeyValues(r io.ReadCloser) (KeyValues, error) {
 			data[sect] = append(data[sect], tline)
 		} else {
 			sect = line
+			if _, ok := data[sect]; ok {
+				return data, fmt.Errorf("key or section %s is present more than once", sect)
+			}
 			data[sect] = make([]string, 0)
 		}
 	}
