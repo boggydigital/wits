@@ -46,8 +46,6 @@ key2
     value3
 ```
 
-This structure would be represented as `map[string]string` in Go or `wits.KeyValue`.
-
 ### SectionKeyValue
 
 For a more complex data that looks like this:
