@@ -3,57 +3,100 @@
 wits is a trivial whitespace indented text structure of sections and lines:
 
 ```text
-#comment1
+# comment1
 section1
- line1-1
- line1-2
-#comment2
+    # comment2
+    line1-1
+    line1-2
 section2
- line2-1
- line2-2 
+    line2-1
+    line2-2 
 ```
 
 ## Why wits?
 
-Why you'd use wits vs other options? In most cases there are existing and better general purpose text formats: JSON, YAML, TOML, etc. Yet, sometimes you don't need most of the functionality they offer and might appreciate lighter solution for simpler cases. 
+Why you'd use wits vs other options? In most cases there are existing and better general purpose text formats: JSON, YAML, TOML, etc. Yet, sometimes you don't need most of the functionality they offer and might appreciate lighter solution for simple and specific cases. 
 
-In those cases, you might appreciate wits - it works great when you need simple structural data (that's fixed and not generic, by design) and you want to allow effortless human data entry into those files, that's harder to mess up.
+wits work great when you need simple structural data (that's fixed and not generic, by design) and you want to allow effortless human data edit or entry into those files, that's harder to mess up.
 
-## Lines types
+## Most common type: KeyValues
 
 In essence, wits files contain lines and line prefix defines line role:
 
 - `#` character prefix makes line a comment
-- `(space)` character prefix makes line... a line (under a section)
+- any amount of `(space)` or `(tab)` character prefixes (or combinations of those characters)  make line... a line (under a section)
 - no prefix makes line a section
 
-Structure described above is mapped to `map[string][]string` in Go - we'll call it `SectLines` going
-forward.
+Structure described above is mapped to `map[string][]string` in Go - wits provide`KeyValues` type.
 
-This project is a Go language module that provides helpers to work with wits files.
+## Specialized types: from simpler to more complex than KeyValues
 
-Lines can be used to represent key value pairs and wits provides helpers to work with key value
-pairs:
+wits provide additional types for various needs:
+
+### KeyValue
+
+If your data needs are limited to a single value for a key, `KeyValue` might be better option than `KeyValues`:
 
 ```text
-section
- key1=value1
- key2=value2
+key1
+    value1
+key2
+    value2
+    # the next value would be ignored when read as KeyValue
+    value3
 ```
 
-That structure is mapped to `map[string]map[string]string` in Go - we'll call it `SectMap` going
-forward.
+This structure would be represented as `map[string]string` in Go or `wits.KeyValue`.
+
+### SectionKeyValue
+
+For a more complex data that looks like this:
+
+```text
+section1
+    key1=value1
+    key2=value2
+section2
+    key3=value3
+    key4=value4
+```
+
+This structure would be represented as `map[string]map[string]string` in Go or `wits.SectionKeyValue`.
+
+### SectionKeyValues
+
+The most complex data case would be similar to: 
+
+```text
+section1
+    key1=value1;value2;value3
+    key2=value4
+section2
+    key3=value5;value6
+    key4=value7;value8
+```
+
+This structure would be represented as `map[string]map[string][]string` in Go or `wits.SectionKeyValues`.
 
 ## Using wits
 
 Adding wits module to your Go app: `go get github.com/boggydigital/wits`
 
-wits provides the following methods to read local data:
+wits provide the following types:
+- `KeyValue`: `map[string]string`
+- `KeyValues`: `map[string][]string`
+- `SectionKeyValue`: `map[string]KeyValue`: `map[string]map[string]string`
+- `SectionKeyValues`: `map[string]KeyValues`: `map[string]map[string][]string`
 
-- `ReadSectLines(path string) (SectLines, error)`
-- `ReadSectMap(path string) (SectMap, error)`
+All types can be read and written using the family of `Read*` functions e.g.:
+- `ReadKeyValue(r io.ReadCloser) (KeyValue, error)`
+- `ReadKeyValues(r io.ReadCloser) (KeyValues, error)`
+- `ReadSectionKeyValue(r io.ReadCloser) (SectionKeyValue, error)`
+- `ReadSectionKeyValues(r io.ReadCloser) (SectionKeyValues, error)`
 
-wits provides the following methods to write data to disk:
+Instances of every type can write data:
 
-- `(sl SectLines) Write(path string) error`
-- `(sm SectMap) Write(path string) error`
+- `(kv KeyValue) Write(w io.WriteCloser) error`
+- `(kvs KeyValues) Write(w io.WriteCloser) error`
+- `(skv SectionKeyValue) Write(w io.WriteCloser) error`
+- `(skvs SectionKeyValues) Write(w io.WriteCloser) error`
