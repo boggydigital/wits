@@ -32,7 +32,7 @@ func TestKvToKvs(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			kvs := kvToKvs(tt.input)
-			testo.EqualInterfaces(t, kvs, tt.output)
+			testo.DeepEqual(t, kvs, tt.output)
 		})
 	}
 }
@@ -72,7 +72,7 @@ func TestKvsToKv(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			kv := kvsToKv(tt.input)
-			testo.EqualInterfaces(t, kv, tt.output)
+			testo.DeepEqual(t, kv, tt.output)
 		})
 	}
 }
@@ -132,7 +132,7 @@ func TestKvsToSkv(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			skv := kvsToSkv(tt.input)
-			testo.EqualInterfaces(t, skv, tt.output)
+			testo.DeepEqual(t, skv, tt.output)
 		})
 	}
 }
@@ -188,7 +188,7 @@ func TestKvsToSkvs(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			skvs := kvsToSkvs(tt.input)
-			testo.EqualInterfaces(t, skvs, tt.output)
+			testo.DeepEqual(t, skvs, tt.output)
 		})
 	}
 }
@@ -227,7 +227,7 @@ func TestSkvToKvs(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			skvs := skvToKvs(tt.input)
-			testo.EqualInterfaces(t, skvs, tt.output)
+			testo.DeepEqual(t, skvs, tt.output)
 		})
 	}
 }
@@ -270,7 +270,7 @@ func TestSkvsToKvs(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			kvs := skvsToKvs(tt.input)
-			testo.EqualInterfaces(t, kvs, tt.output)
+			testo.DeepEqual(t, kvs, tt.output)
 		})
 	}
 }

@@ -134,7 +134,7 @@ func TestReadKeyValue(t *testing.T) {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			kv, err := ReadKeyValue(strings.NewReader(tt.content))
 
-			testo.EqualInterfaces(t, kv, tt.output)
+			testo.DeepEqual(t, kv, tt.output)
 			testo.Error(t, err, tt.expErr)
 		})
 	}
@@ -167,7 +167,7 @@ func TestReadKeyValues(t *testing.T) {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			kvs, err := ReadKeyValues(strings.NewReader(tt.content))
 
-			testo.EqualInterfaces(t, kvs, tt.output)
+			testo.DeepEqual(t, kvs, tt.output)
 			testo.Error(t, err, tt.expErr)
 		})
 	}
@@ -228,7 +228,7 @@ func TestReadSectionKeyValue(t *testing.T) {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			skv, err := ReadSectionKeyValue(strings.NewReader(tt.content))
 
-			testo.EqualInterfaces(t, skv, tt.output)
+			testo.DeepEqual(t, skv, tt.output)
 			testo.Error(t, err, tt.expErr)
 		})
 	}
@@ -261,7 +261,7 @@ func TestReadSectionKeyValues(t *testing.T) {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			skvs, err := ReadSectionKeyValues(strings.NewReader(tt.content))
 
-			testo.EqualInterfaces(t, skvs, tt.output)
+			testo.DeepEqual(t, skvs, tt.output)
 			testo.Error(t, err, tt.expErr)
 		})
 	}
