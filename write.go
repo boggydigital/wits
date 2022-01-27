@@ -5,9 +5,7 @@ import (
 	"io"
 )
 
-func (kvs KeyValues) Write(w io.WriteCloser) error {
-	defer w.Close()
-
+func (kvs KeyValues) Write(w io.Writer) error {
 	for key, values := range kvs {
 		if _, err := fmt.Fprintf(w, "%s\n", key); err != nil {
 			return err
@@ -22,14 +20,14 @@ func (kvs KeyValues) Write(w io.WriteCloser) error {
 	return nil
 }
 
-func (kv KeyValue) Write(w io.WriteCloser) error {
+func (kv KeyValue) Write(w io.Writer) error {
 	return kvToKvs(kv).Write(w)
 }
 
-func (skv SectionKeyValue) Write(w io.WriteCloser) error {
+func (skv SectionKeyValue) Write(w io.Writer) error {
 	return skvToKvs(skv).Write(w)
 }
 
-func (skvs SectionKeyValues) Write(w io.WriteCloser) error {
+func (skvs SectionKeyValues) Write(w io.Writer) error {
 	return skvsToKvs(skvs).Write(w)
 }

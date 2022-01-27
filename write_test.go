@@ -3,21 +3,24 @@ package wits
 import (
 	"github.com/boggydigital/testo"
 	"strconv"
+	"strings"
 	"testing"
 )
 
-type stringWriteCloser struct {
-	content string
-}
+//type stringWriteCloser struct {
+//	content string
+//}
+//
+//func (swc *stringWriteCloser) Write(b []byte) (int, error) {
+//	swc.content += string(b)
+//	return len(b), nil
+//}
+//
+//func (swc *stringWriteCloser) Close() error {
+//	return nil
+//}
 
-func (swc *stringWriteCloser) Write(b []byte) (int, error) {
-	swc.content += string(b)
-	return len(b), nil
-}
-
-func (swc *stringWriteCloser) Close() error {
-	return nil
-}
+var sb = &strings.Builder{}
 
 func TestKeyValuesWrite(t *testing.T) {
 	tests := []struct {
@@ -52,10 +55,10 @@ func TestKeyValuesWrite(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			swc := &stringWriteCloser{}
-			err := tt.input.Write(swc)
+			sb.Reset()
+			err := tt.input.Write(sb)
 
-			testo.EqualValues(t, swc.content, tt.output)
+			testo.EqualValues(t, sb.String(), tt.output)
 			testo.Error(t, err, false)
 		})
 	}
@@ -76,10 +79,10 @@ func TestKeyValueWrite(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			swc := &stringWriteCloser{}
-			err := tt.input.Write(swc)
+			sb.Reset()
+			err := tt.input.Write(sb)
 
-			testo.EqualValues(t, swc.content, tt.output)
+			testo.EqualValues(t, sb.String(), tt.output)
 			testo.Error(t, err, false)
 		})
 	}
@@ -116,10 +119,10 @@ func TestSectionKeyValueWrite(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			swc := &stringWriteCloser{}
-			err := tt.input.Write(swc)
+			sb.Reset()
+			err := tt.input.Write(sb)
 
-			testo.EqualValues(t, swc.content, tt.output)
+			testo.EqualValues(t, sb.String(), tt.output)
 			testo.Error(t, err, false)
 		})
 	}
@@ -168,10 +171,10 @@ func TestSectionKeyValuesWrite(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			swc := &stringWriteCloser{}
-			err := tt.input.Write(swc)
+			sb.Reset()
+			err := tt.input.Write(sb)
 
-			testo.EqualValues(t, swc.content, tt.output)
+			testo.EqualValues(t, sb.String(), tt.output)
 			testo.Error(t, err, false)
 		})
 	}

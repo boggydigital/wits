@@ -2,7 +2,6 @@ package wits
 
 import (
 	"github.com/boggydigital/testo"
-	"io"
 	"strconv"
 	"strings"
 	"testing"
@@ -133,8 +132,7 @@ func TestReadKeyValue(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			kv, err := ReadKeyValue(
-				io.NopCloser(strings.NewReader(tt.content)))
+			kv, err := ReadKeyValue(strings.NewReader(tt.content))
 
 			testo.EqualInterfaces(t, kv, tt.output)
 			testo.Error(t, err, tt.expErr)
@@ -167,8 +165,7 @@ func TestReadKeyValues(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			kvs, err := ReadKeyValues(
-				io.NopCloser(strings.NewReader(tt.content)))
+			kvs, err := ReadKeyValues(strings.NewReader(tt.content))
 
 			testo.EqualInterfaces(t, kvs, tt.output)
 			testo.Error(t, err, tt.expErr)
@@ -229,8 +226,7 @@ func TestReadSectionKeyValue(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			skv, err := ReadSectionKeyValue(
-				io.NopCloser(strings.NewReader(tt.content)))
+			skv, err := ReadSectionKeyValue(strings.NewReader(tt.content))
 
 			testo.EqualInterfaces(t, skv, tt.output)
 			testo.Error(t, err, tt.expErr)
@@ -263,8 +259,7 @@ func TestReadSectionKeyValues(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			skvs, err := ReadSectionKeyValues(
-				io.NopCloser(strings.NewReader(tt.content)))
+			skvs, err := ReadSectionKeyValues(strings.NewReader(tt.content))
 
 			testo.EqualInterfaces(t, skvs, tt.output)
 			testo.Error(t, err, tt.expErr)

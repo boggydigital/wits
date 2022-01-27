@@ -13,7 +13,7 @@ const (
 	commentPfx = "#"
 )
 
-func ReadKeyValue(r io.ReadCloser) (KeyValue, error) {
+func ReadKeyValue(r io.Reader) (KeyValue, error) {
 	if kvs, err := ReadKeyValues(r); err != nil {
 		return nil, err
 	} else {
@@ -21,8 +21,7 @@ func ReadKeyValue(r io.ReadCloser) (KeyValue, error) {
 	}
 }
 
-func ReadKeyValues(r io.ReadCloser) (KeyValues, error) {
-	defer r.Close()
+func ReadKeyValues(r io.Reader) (KeyValues, error) {
 	data := make(KeyValues)
 
 	scanner := bufio.NewScanner(r)
@@ -59,7 +58,7 @@ func ReadKeyValues(r io.ReadCloser) (KeyValues, error) {
 	return data, nil
 }
 
-func ReadSectionKeyValue(r io.ReadCloser) (SectionKeyValue, error) {
+func ReadSectionKeyValue(r io.Reader) (SectionKeyValue, error) {
 	if lines, err := ReadKeyValues(r); err != nil {
 		return nil, err
 	} else {
@@ -67,7 +66,7 @@ func ReadSectionKeyValue(r io.ReadCloser) (SectionKeyValue, error) {
 	}
 }
 
-func ReadSectionKeyValues(r io.ReadCloser) (SectionKeyValues, error) {
+func ReadSectionKeyValues(r io.Reader) (SectionKeyValues, error) {
 	if kvs, err := ReadKeyValues(r); err != nil {
 		return nil, err
 	} else {
